@@ -1,0 +1,74 @@
+[
+  {
+    "id": "ARCH-01",
+    "commitHash": "c6dba47b",
+    "category": "Final Authority",
+    "title": "Deterministic Authorization Decoupling",
+    "rationale": "Moving mutation authority outside the probabilistic generative loop prevents unauthorized repository writes and prompt-injection escapes.",
+    "correctDiff": "const decision = evaluateProposal(proposal);\nif (decision.status !== 'ALLOW') {\n  return rejectMutation(decision.reason);\n}\nawait commitToGitHub(proposal);",
+    "wrongDiff": "const shouldCommit = await agent.decideIfSafe(proposal);\nif (shouldCommit) {\n  await commitToGitHub(proposal);\n}",
+    "timestamp": "2026-10-08T18:22:10Z",
+    "tags": ["authority", "security", "guardrail"],
+    "verificationStatus": "PROMOTED"
+  },
+  {
+    "id": "ARCH-02",
+    "commitHash": "235b18ca",
+    "category": "Memory Lineage",
+    "title": "SHA-256 Lineage Hash Chain Verification",
+    "rationale": "Cryptographic chaining ensures historical records cannot be rewritten or forged by compromised agents without breaking the parent hash signature.",
+    "correctDiff": "const expectedHash = sha256(entry.parentHash + JSON.stringify(entry.state));\nif (expectedHash !== entry.currentHash) {\n  throw new Error('Broken Lineage Chain detected at depth ' + depth);\n}",
+    "wrongDiff": "const entry = memoryLedger[depth];\n// Assume memory is valid if timestamp is increasing\nreturn entry.state;",
+    "timestamp": "2026-10-08T19:10:45Z",
+    "tags": ["cryptography", "lineage", "integrity"],
+    "verificationStatus": "PROMOTED"
+  },
+  {
+    "id": "ARCH-03",
+    "commitHash": "e45daa40",
+    "category": "Entropy Sanitization",
+    "title": "Shannon Entropy Secret Sanitization Gate",
+    "rationale": "Blocks high-entropy synthetic API tokens, private keys, and passwords from entering persistent vector memory or git commit snapshots.",
+    "correctDiff": "const entropy = calculateShannonEntropy(patchContent);\nif (entropy > 4.5 && containsForbiddenPattern(patchContent)) {\n  return { pass: false, violation: 'Potential Secret Entropy Exceeded (>4.5 bits/B)' };\n}",
+    "wrongDiff": "return { pass: true }; // Rely on developer vigilance to never paste credentials",
+    "timestamp": "2026-10-08T19:44:02Z",
+    "tags": ["entropy", "secrets", "sanitization"],
+    "verificationStatus": "PROMOTED"
+  },
+  {
+    "id": "ARCH-04",
+    "commitHash": "7f8b910c",
+    "category": "Self-Stopping",
+    "title": "Recursive Execution Circuit Breaker",
+    "rationale": "Unbounded iteration loops consume host compute and risk runaway agent sprawl. Enforcing hard step budgets halts divergence.",
+    "correctDiff": "this.stepsExecuted += 1;\nif (this.stepsExecuted >= this.maxBudgetSteps) {\n  this.circuitBreakerTripped = true;\n  throw new SafetyQuotaExceeded('Self-stopping limit enforced by EMG.');\n}",
+    "wrongDiff": "while (goalNotReached) {\n  await agent.executeStep();\n  // No step budget or circuit breaker\n}",
+    "timestamp": "2026-10-08T20:05:18Z",
+    "tags": ["circuit-breaker", "concurrency", "safety"],
+    "verificationStatus": "VERIFIED"
+  },
+  {
+    "id": "ARCH-05",
+    "commitHash": "9b12d4fa",
+    "category": "AST Security",
+    "title": "Dynamic Code Evaluation Token Prohibition",
+    "rationale": "Direct execution of dynamic eval() or Function() on untrusted generative payloads allows arbitrary code execution in the runtime environment.",
+    "correctDiff": "const parsedAST = parseTypeScript(codePayload);\nassertNoDynamicEval(parsedAST);\nrunInIsolatedVM(parsedAST);",
+    "wrongDiff": "eval(codePayload); // Directly executing model output in Node process",
+    "timestamp": "2026-10-08T20:15:33Z",
+    "tags": ["ast", "sandbox", "injection"],
+    "verificationStatus": "PROMOTED"
+  },
+  {
+    "id": "ARCH-06",
+    "commitHash": "d820e119",
+    "category": "Concurrency",
+    "title": "Worker Thread Termination on Subworld Shutdown",
+    "rationale": "Child simulation worlds spawned in Web Workers must be explicitly terminated on parent tear-down to avoid zombie thread heap leaks.",
+    "correctDiff": "worker.postMessage({ type: 'TERMINATE' });\nworker.terminate();\nactiveWorkers.delete(worldId);",
+    "wrongDiff": "activeWorlds.delete(worldId); // Worker keeps running in background indefinitely",
+    "timestamp": "2026-10-08T20:25:50Z",
+    "tags": ["web-workers", "memory-leak", "performance"],
+    "verificationStatus": "VERIFIED"
+  }
+]

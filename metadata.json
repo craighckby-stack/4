@@ -1,0 +1,6 @@
+{
+  "name": "AetherForge Ω — World-First Agent Simulation & Emergence Platform",
+  "description": "Next-generation autonomous agent simulation platform implementing the world-first, self-originating agents architecture with DALEK CAAN memory ledger, Sovereign v86 refactor deck, and epistemic Verification Tribunal.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

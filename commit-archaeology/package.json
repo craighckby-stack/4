@@ -1,0 +1,25 @@
+{
+  "name": "commit-archaeology",
+  "version": "1.0.0",
+  "description": "The living exemplar ledger of RIGHT (CORRECT) vs WRONG (ERRANT) code patterns for AetherForge Ω.",
+  "main": "archaeology_engine.ts",
+  "type": "module",
+  "scripts": {
+    "audit": "tsx archaeology_engine.ts",
+    "harvest": "tsx commit_harvester.ts",
+    "test": "vitest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/craighckby-stack/commit-archaeology"
+  },
+  "keywords": [
+    "commit-archaeology",
+    "correct-wrong-pairs",
+    "aetherforge",
+    "formal-verification",
+    "diff-analysis"
+  ],
+  "author": "craighckby-stack",
+  "license": "Apache-2.0"
+}
